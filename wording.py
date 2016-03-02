@@ -1,40 +1,65 @@
 import random
 import json
-from re import match
+from re import sub
 
-RWFile = open("RecentWords.json")
-WAFile = open("WordAssociations.json")
 try:
     Recents = json.loads(RWFile)
     Associations = json.loads(WAFile)
+    Starters = json.loads(SWFile)
+    RWFile = open("RecentWords.json","r+")
+    WAFile = open("WordAssociations.json","r+")
+    SWFile = open("StartingWords.json","r+")
 except:
     print("Failed to load files")
     Recents = []
     Associations = {}
+    Starters = []
 
 #Add words to the list of recently used words, as well as add associations.
 def read(WordString):
     print("Reading words...")
     global Recents
     global Associations
-    
-    Words = WordString.split(" ")
+
+    sub('[^\.\w]', '', WordString)
+    Words = WordString.lower().split(" ")
     for I in range(0,len(Words)-1):
         W = Words[I]
-        Recents.append(W)
-        T = list(W)
-        print("Removing punctuation...")
-        for C in range(0,len(T)-1):
-            if not T[C].isalpha():
-                T.pop(C)
-                print(T[C])
-        if not (W in Associations):
-            Associations[W] = []
-        Associations[W].append(Words[I+1])
+        if W != '':
+            Recents.append(W)
+            T = list(W)
 
+            if not (W in Associations):
+                Associations[W] = []
+
+            if W[-1] != ".":
+                Associations[W].append(Words[I+1])
+
+            Recents.append(removeperiod(W))
+            try:
+               if I == 0:
+                   Starters.append(W)
+               elif Words[I-1][-1] == ".":
+                   Starters.append(W)
+            except:
+                print("hurr")
     print(Associations)
+    trim()
     
 def trim():
     global Associations
     global Recents
-    pass
+    try:
+        while Recents[5000]:
+            Recents.pop(0)
+    except:
+        pass
+    for A in Associations:
+        print(A)
+    
+def removeperiod(word):
+    T = list(word)
+    for x in T:
+        if x == ".":
+            T.pop(T.index(x))
+    return str(T)
