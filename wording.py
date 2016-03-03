@@ -55,7 +55,11 @@ def trim():
     except:
         pass
     for A in Associations:
-        print(A)
+        try:
+            while Associations[A][175]:
+                Associations[A].pop(0)
+        except:
+            pass
     
 def removeperiod(word):
     T = list(word)
@@ -63,3 +67,6 @@ def removeperiod(word):
         if x == ".":
             T.pop(T.index(x))
     return str(T)
+
+def write(word):
+    pass
