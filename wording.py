@@ -36,7 +36,7 @@ def read(WordString):
             if W[-1] != ".":
                 Associations[W].append(Words[I+1])
 
-            Recents.append(removeperiod(W))
+            #Recents.append(removeperiod(W))
             try:
                if I == 0:
                    Starters.append(W)
@@ -65,14 +65,18 @@ def trim():
     try:
         while Starters[100]:
             Starters.pop(0)
-        except:
-            pass
-def removeperiod(word):
-    T = list(word)
-    for x in T:
-        if x == ".":
-            T.pop(T.index(x))
-    return str(T)
+    except:
+        pass
+    
+##def removeperiod(word):
+##    T = list(word)
+##    for x in T:
+##        if x == ".":
+##            T.pop(T.index(x))
+##    s = []
+##    for x in T:
+##        s += x
+##    return s
 
 def writesentence(word):
     word = word.lower()
@@ -115,3 +119,10 @@ def save():
         SWFile.write(json.dumps(Starters))
     except BaseException as e:
         print(e)
+
+def randomthought():
+    try:
+        return writesentence(choice(Starters))
+    except BaseException as e:
+        return "An error has occured. Please notify sasshunter.tumblr.com, referencing randomthought() "+str(e)
+    
