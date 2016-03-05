@@ -7,9 +7,9 @@ try:
     RWFile = open("RecentWords.json","r+")
     WAFile = open("WordAssociations.json","r+")
     SWFile = open("StartingWords.json","r+")
-    Recents = json.loads(RWFile)
-    Associations = json.loads(WAFile)
-    Starters = json.loads(SWFile)
+    Recents = json.loads(RWFile.read())
+    Associations = json.loads(WAFile.read())
+    Starters = json.loads(SWFile.read())
 except:
     print("Failed to load files")
     Recents = []
@@ -62,7 +62,11 @@ def trim():
                 Associations[A].pop(0)
         except:
             pass
-    
+    try:
+        while Starters[100]:
+            Starters.pop(0)
+        except:
+            pass
 def removeperiod(word):
     T = list(word)
     for x in T:
@@ -81,7 +85,7 @@ def writesentence(word):
     wtw = randint(3,40)
     for I in range(0,wtw):
         try:
-            newword = choice(Associations[writing[I-1]])
+            newword = choice(Associations[writing[I+1]])
             writing.append(newword)
         except IndexError as e:
             pass
