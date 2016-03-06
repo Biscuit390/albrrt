@@ -7,11 +7,18 @@ try:
     RWFile = open("RecentWords.json","r+")
     WAFile = open("WordAssociations.json","r+")
     SWFile = open("StartingWords.json","r+")
+    print("read")
     Recents = json.loads(RWFile.read())
+    print("1")
     Associations = json.loads(WAFile.read())
+    print("2")
     Starters = json.loads(SWFile.read())
-except:
-    print("Failed to load files")
+    RWFile.close()
+    WAFile.close()
+    SWFile.close()
+except BaseException as e:
+    #print("Failed to load files")
+    print(e)
     Recents = []
     Associations = {}
     Starters = []
@@ -89,14 +96,16 @@ def writesentence(word):
     wtw = randint(3,40)
     for I in range(0,wtw):
         try:
-            newword = choice(Associations[writing[I+1]])
-            writing.append(newword)
+            newword = choice(Associations[writing[I]])
+            print(I)
         except IndexError as e:
-            pass
+            newword = choice(Recents)
         except KeyError as e:
-            pass
+            newword = choice(Recents)
+        writing.append(newword)
     written = ""
     for x in writing:
+        print(x)
         written +=(str(x)+" ")
     return written
 
@@ -105,6 +114,9 @@ def save():
         global RWFile
         global WAFile
         global SWFile
+        RWFile = open("RecentWords.json","r+")
+        WAFile = open("WordAssociations.json","r+")
+        SWFile = open("StartingWords.json","r+")
         RWFile.truncate()
         WAFile.truncate()
         SWFile.truncate()
@@ -117,12 +129,17 @@ def save():
         RWFile.write(json.dumps(Recents))
         WAFile.write(json.dumps(Associations))
         SWFile.write(json.dumps(Starters))
+        RWFile.close()
+        WAFile.close()
+        SWFile.close()
     except BaseException as e:
         print(e)
 
 def randomthought():
     try:
         return writesentence(choice(Starters))
+    except IndexError:
+        return writesentence(choice(Recents))
     except BaseException as e:
         return "An error has occured. Please notify sasshunter.tumblr.com, referencing randomthought() "+str(e)
     
