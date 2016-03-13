@@ -3,25 +3,38 @@ import json
 from re import sub
 from random import randint,choice
 
-try:
-    RWFile = open("RecentWords.json","r+")
-    WAFile = open("WordAssociations.json","r+")
-    SWFile = open("StartingWords.json","r+")
-    print("read")
-    Recents = json.loads(RWFile.read())
-    print("1")
-    Associations = json.loads(WAFile.read())
-    print("2")
-    Starters = json.loads(SWFile.read())
-    RWFile.close()
-    WAFile.close()
-    SWFile.close()
-except BaseException as e:
-    #print("Failed to load files")
-    print(e)
-    Recents = []
-    Associations = {}
-    Starters = []
+Recents = []
+Associations = {}
+Starters = []
+RWFile,WAFile,SWFile = None,None,None
+
+
+def getWords():
+    try:
+        global RWFile
+        global WAFile
+        global SWFile
+        global Recents
+        global Associations
+        global Starters
+        RWFile = open("RecentWords.json","r+")
+        WAFile = open("WordAssociations.json","r+")
+        SWFile = open("StartingWords.json","r+")
+        print("read")
+        Recents = json.loads(RWFile.read())
+        print("1")
+        Associations = json.loads(WAFile.read())
+        print("2")
+        Starters = json.loads(SWFile.read())
+        RWFile.close()
+        WAFile.close()
+        SWFile.close()
+    except BaseException as e:
+        #print("Failed to load files")
+        print(e)
+        Recents = []
+        Associations = {}
+        Starters = []
 
 #Add words to the list of recently used words, as well as add associations.
 def read(WordString):
@@ -51,8 +64,8 @@ def read(WordString):
                    Starters.append(W)
             except:
                 print("hurr")
-    print(Associations)
-    print(Starters)
+    #print(Associations)
+    #print(Starters)
     trim()
     
 def trim():
@@ -74,7 +87,7 @@ def trim():
             Starters.pop(0)
     except:
         pass
-    
+    print(len(Recents),len(Associations),len(Starters))
 ##def removeperiod(word):
 ##    T = list(word)
 ##    for x in T:
@@ -97,7 +110,7 @@ def writesentence(word):
     for I in range(0,wtw):
         try:
             newword = choice(Associations[writing[I]])
-            print(I)
+            #print(I)
         except IndexError as e:
             newword = choice(Recents)
         except KeyError as e:
@@ -105,8 +118,9 @@ def writesentence(word):
         writing.append(newword)
     written = ""
     for x in writing:
-        print(x)
+        #print(x)
         written +=(str(x)+" ")
+    print(written)
     return written
 
 def save():
