@@ -106,7 +106,7 @@ def writesentence(word):
         writing.append(word)
     except BaseException as e:
         print(e)
-    wtw = randint(3,40)
+    wtw = randint(3,30)
     for I in range(0,wtw):
         try:
             newword = choice(Associations[writing[I]])
