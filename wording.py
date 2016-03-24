@@ -60,7 +60,7 @@ def read(WordString):
             try:
                if I == 0:
                    Starters.append(W)
-               elif Words[I-1][-1] == ".":
+               elif Words[I-1][-1] in (".","?","\n","!","\""):
                    Starters.append(W)
             except:
                 print("hurr")
@@ -72,18 +72,18 @@ def trim():
     global Associations
     global Recents
     try:
-        while Recents[5000]:
+        while Recents[15000]:
             Recents.pop(0)
     except:
         pass
     for A in Associations:
         try:
-            while Associations[A][175]:
+            while Associations[A][500]:
                 Associations[A].pop(0)
         except:
             pass
     try:
-        while Starters[100]:
+        while Starters[275]:
             Starters.pop(0)
     except:
         pass
