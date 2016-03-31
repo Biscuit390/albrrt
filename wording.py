@@ -4,90 +4,125 @@ from re import sub
 from random import randint,choice
 
 Recents = []
-Associations = {}
+FWWords = {}
 Starters = []
-RWFile,WAFile,SWFile = None,None,None
-
+BWWords = {}
+FWFile,WAFile,SWFile,BWFile = None,None,None,None
+        
 
 def getWords():
     try:
-        global RWFile
+        global FWFile
         global WAFile
         global SWFile
+        global RWFile
         global Recents
-        global Associations
+        global FWWords
+        global BWWords
         global Starters
         RWFile = open("RecentWords.json","r+")
-        WAFile = open("WordAssociations.json","r+")
+        FWFile = open("FWWords.json","r+")
         SWFile = open("StartingWords.json","r+")
+        BWFile = open("BWWords.json","r+")
         print("read")
         Recents = json.loads(RWFile.read())
         print("1")
-        Associations = json.loads(WAFile.read())
+        FWWords = json.loads(FWFile.read())
         print("2")
         Starters = json.loads(SWFile.read())
+        print("3")
+        BWWords = json.loads(BWFile.read())
         RWFile.close()
-        WAFile.close()
+        FWFile.close()
         SWFile.close()
+        BWFile.close()
     except BaseException as e:
         #print("Failed to load files")
         print(e)
         Recents = []
-        Associations = {}
+        FWWords = {}
         Starters = []
+        BWWords = {}
 
-#Add words to the list of recently used words, as well as add associations.
+#Add words to the list of recently used words, as well as add FWWords.
 def read(WordString):
     print("Reading words...")
-    global Recents
-    global Associations
-
-    sub('[^\.\w]', '', WordString)
-    Words = WordString.lower().split(" ")
-    for I in range(0,len(Words)-1):
-        W = Words[I]
-        if W != '':
-            Recents.append(W)
-            T = list(W)
-
-            if not (W in Associations):
-                Associations[W] = []
-
-            if W[-1] != ".":
-                Associations[W].append(Words[I+1])
-
-            #Recents.append(removeperiod(W))
-            try:
-               if I == 0:
-                   Starters.append(W)
-               elif Words[I-1][-1] in (".","?","\n","!","\""):
-                   Starters.append(W)
-            except:
-                print("hurr")
-    #print(Associations)
-    #print(Starters)
-    trim()
+    if passcensor(WordString):
+        global Recents
+        global FWWords
+        global BWWords
+        global Starters
+        sub('[^\.\w]', '', WordString)
+        TW = WordString.lower().split("\n")
+        Words = []
+        for x in TW:
+            for y in x.split(" "):
+                Words.append(y)
+        for I in range(0,len(Words)):
+            W = Words[I]
+            if W != '':
+                Recents.append(W)
+                T = list(W)
+                
+                if not (W in FWWords):
+                    FWWords[W] = []
+                    BWWords[W] = []
+                
+                if not W[-1] in (".","?","\n","!","\""):
+                    try:
+                        FWWords[W].append(Words[I+1])
+                    except BaseException as e:
+                        print(e)
+                        
+                try:
+                    BWWords[W].append(Words[I-1])
+                except BaseException as e:
+                    print(e)
+                #Recents.append(removeperiod(W))
+                try:
+                   if I == 0:
+                       Starters.append(W)
+                   elif Words[I-1][-1] in (".","?","\n","!","\""):
+                       Starters.append(W)
+                except:
+                    print("hurr")
+        #print(FWWords)
+        #print(Starters)
+        trim()
+    else:
+        print("a bad word")
     
 def trim():
-    global Associations
+    global FWWords
     global Recents
-    try:
-        while Recents[15000]:
-            Recents.pop(0)
-    except:
-        pass
-    for A in Associations:
-        try:
-            while Associations[A][500]:
-                Associations[A].pop(0)
-        except:
-            pass
-    try:
-        while Starters[275]:
-            Starters.pop(0)
-    except:
-        pass
-    print(len(Recents),len(Associations),len(Starters))
+    global Starters
+    global BWWords
+##    try:
+##        while Recents[40000]:
+##            Recents.pop(0)
+##    except:
+##        pass
+##    for A in FWWords:
+##        try:
+##            while FWWords[A][40]:
+##                FWWords[A].pop(0)
+##        except:
+##            pass
+##    for A in BWWords:
+##        try:
+##            while BWWords[A][40]:
+##                BWWords[A].pop(0)
+##        except:
+##            pass
+##    try:
+##        while Starters[1000]:
+##            Starters.pop(0)
+##    except:
+##        pass
+    for x in Recents:
+        if not passcensor(x):
+            Recents.pop(Recents.index(x))
+    print(len(Recents),len(FWWords),len(Starters))
 ##def removeperiod(word):
 ##    T = list(word)
 ##    for x in T:
@@ -101,51 +136,57 @@ def trim():
 def writesentence(word):
     word = word.lower()
     writing = []
-    #if word in Starters:
-    try:
-        writing.append(word)
-    except BaseException as e:
-        print(e)
-    wtw = randint(3,30)
+    writing.append(word)
+    wtw = randint(1,35)
     for I in range(0,wtw):
         try:
-            newword = choice(Associations[writing[I]])
-            #print(I)
+            notrecent = True
+            while notrecent:
+                newword = choice(FWWords[writing[I]])
+                if newword in Recents:
+                    notrecent = False
         except IndexError as e:
             newword = choice(Recents)
+            print(e)
         except KeyError as e:
             newword = choice(Recents)
+            print(e)
         writing.append(newword)
     written = ""
     for x in writing:
         #print(x)
-        written +=(str(x)+" ")
-    print(written)
+        written +=str(x)+" "
+    #print(written)
     return written
 
 def save():
     try:
+        global FWFile
         global RWFile
-        global WAFile
         global SWFile
+        global BWFile
         RWFile = open("RecentWords.json","r+")
-        WAFile = open("WordAssociations.json","r+")
+        FWFile = open("FWWords.json","r+")
         SWFile = open("StartingWords.json","r+")
+        BWFile = open("BWWords.json","r+")
+        print(1)
         RWFile.truncate()
-        WAFile.truncate()
+        print("A")
+        FWFile.truncate()
+        print("B")
         SWFile.truncate()
-        #Recents = json.loads(RWFile)
-        #Associations = json.loads(WAFile)
-        #Starters = json.loads(SWFile)
-        #RWFile = open("RecentWords.json","r+")
-        #WAFile = open("WordAssociations.json","r+")
-        #SWFile = open("StartingWords.json","r+")
+        print("C")
+        BWFile.truncate()
+        print(2)
         RWFile.write(json.dumps(Recents))
-        WAFile.write(json.dumps(Associations))
+        FWFile.write(json.dumps(FWWords))
         SWFile.write(json.dumps(Starters))
+        BWFile.write(json.dumps(BWWords))
+        print(3)
+        FWFile.close()
         RWFile.close()
-        WAFile.close()
         SWFile.close()
+        BWFile.close()
     except BaseException as e:
         print(e)
 
@@ -156,4 +197,14 @@ def randomthought():
         return writesentence(choice(Recents))
     except BaseException as e:
         return "An error has occured. Please notify sasshunter.tumblr.com, referencing randomthought() "+str(e)
-    
+
+
+def passcensor(words):
+    didpass = True
+    Bad = ['fuck','porn','pee','defecate','bitch','shit','gay','daddy','dick','tit','cis','cunt','sjw','cum','sex','dildo','penis','nigg','bugger']
+    for x in Bad:
+        if x in words.lower():
+            didpass = False
+    if not didpass:
+        print("A bad word")
+    return didpass
