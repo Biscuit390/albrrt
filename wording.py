@@ -23,13 +23,13 @@ def getWords():
     FWFile = open("FWWords.json","r+")
     SWFile = open("StartingWords.json","r+")
     BWFile = open("BWWords.json","r+")
-    print("read")
+    #print("read")
     Recents = json.loads(RWFile.read())
-    print("1")
+    #print("1")
     FWWords = json.loads(FWFile.read())
-    print("2")
+    #print("2")
     Starters = json.loads(SWFile.read())
-    print("3")
+    #print("3")
     BWWords = json.loads(BWFile.read())
     RWFile.close()
     FWFile.close()
@@ -39,7 +39,7 @@ def getWords():
 
 #Add words to the list of recently used words, as well as add FWWords.
 def read(WordString):
-    print("Reading words...")
+    #print("Reading words...")
     if passcensor(WordString):
         global Recents
         global FWWords
@@ -130,8 +130,8 @@ def writesentence(word):
     word = word.lower()
     writing = []
     writing.append(word)
-    wtw = randint(1,35)
-    for I in range(0,wtw):
+    #wtw = randint(1,35)
+    for I in range(0,51000):
         gotword = False
         try:
             shuffle(FWWords[writing[I]])
@@ -144,10 +144,10 @@ def writesentence(word):
                 raise IndexError
         except IndexError as e:
             newword = choice(Recents)
-            print(e)
+            #print(e)
         except KeyError as e:
             newword = choice(Recents)
-            print(e)
+            #print(e)
         writing.append(newword)
     written = ""
     for x in writing:
@@ -185,7 +185,8 @@ def save():
         SWFile.close()
         BWFile.close()
     except BaseException as e:
-        print(e)
+        #print(e)
+        pass
 
 def randomthought():
     try:
@@ -200,6 +201,6 @@ def passcensor(words):
     for x in Bad:
         if x in words.lower():
             didpass = False
-            print("A bad word")
+            #print("A bad word")
             break
     return didpass
