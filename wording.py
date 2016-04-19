@@ -1,7 +1,7 @@
 import random
 import json
 from re import sub
-from random import randint,choice
+from random import randint,choice,shuffle
 
 Recents = []
 FWWords = {}
@@ -11,38 +11,31 @@ FWFile,WAFile,SWFile,BWFile = None,None,None,None
         
 
 def getWords():
-    try:
-        global FWFile
-        global WAFile
-        global SWFile
-        global RWFile
-        global Recents
-        global FWWords
-        global BWWords
-        global Starters
-        RWFile = open("RecentWords.json","r+")
-        FWFile = open("FWWords.json","r+")
-        SWFile = open("StartingWords.json","r+")
-        BWFile = open("BWWords.json","r+")
-        print("read")
-        Recents = json.loads(RWFile.read())
-        print("1")
-        FWWords = json.loads(FWFile.read())
-        print("2")
-        Starters = json.loads(SWFile.read())
-        print("3")
-        BWWords = json.loads(BWFile.read())
-        RWFile.close()
-        FWFile.close()
-        SWFile.close()
-        BWFile.close()
-    except BaseException as e:
-        #print("Failed to load files")
-        print(e)
-        Recents = []
-        FWWords = {}
-        Starters = []
-        BWWords = {}
+    global FWFile
+    global WAFile
+    global SWFile
+    global RWFile
+    global Recents
+    global FWWords
+    global BWWords
+    global Starters
+    RWFile = open("RecentWords.json","r+")
+    FWFile = open("FWWords.json","r+")
+    SWFile = open("StartingWords.json","r+")
+    BWFile = open("BWWords.json","r+")
+    print("read")
+    Recents = json.loads(RWFile.read())
+    print("1")
+    FWWords = json.loads(FWFile.read())
+    print("2")
+    Starters = json.loads(SWFile.read())
+    print("3")
+    BWWords = json.loads(BWFile.read())
+    RWFile.close()
+    FWFile.close()
+    SWFile.close()
+    BWFile.close()
+    #print("Failed to load files")
 
 #Add words to the list of recently used words, as well as add FWWords.
 def read(WordString):
@@ -68,7 +61,7 @@ def read(WordString):
                     FWWords[W] = []
                     BWWords[W] = []
                 
-                if not W[-1] in (".","?","\n","!","\""):
+                if not W[-1] in (".","?","\n","!"):
                     try:
                         FWWords[W].append(Words[I+1])
                     except BaseException as e:
@@ -139,12 +132,16 @@ def writesentence(word):
     writing.append(word)
     wtw = randint(1,35)
     for I in range(0,wtw):
+        gotword = False
         try:
-            notrecent = True
-            while notrecent:
-                newword = choice(FWWords[writing[I]])
+            shuffle(FWWords[writing[I]])
+            for newword in FWWords[writing[I]]:
                 if newword in Recents:
-                    notrecent = False
+                    gotword = True
+                    break
+                    
+            if not gotword:
+                raise IndexError
         except IndexError as e:
             newword = choice(Recents)
             print(e)
@@ -195,16 +192,14 @@ def randomthought():
         return writesentence(choice(Starters))
     except IndexError:
         return writesentence(choice(Recents))
-    except BaseException as e:
-        return "An error has occured. Please notify sasshunter.tumblr.com, referencing randomthought() "+str(e)
 
 
 def passcensor(words):
     didpass = True
-    Bad = ['fuck','porn','pee','defecate','bitch','shit','gay','daddy','dick','tit','cis','cunt','sjw','cum','sex','dildo','penis','nigg','bugger']
+    Bad = ['fuck','porn','yiff','pee','defecate','bitch','anal','douche','shit','gay','daddy','dick','tit','cis','cunt','sjw','cum','sex','dildo','penis','nigg','bugger']
     for x in Bad:
         if x in words.lower():
             didpass = False
-    if not didpass:
-        print("A bad word")
+            print("A bad word")
+            break
     return didpass
