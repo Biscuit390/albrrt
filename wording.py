@@ -196,7 +196,7 @@ def randomthought():
 
 def passcensor(words):
     didpass = True
-    Bad = ['fuck','porn','yiff','pee','defecate','bitch','anal','douche','shit','gay','daddy','dick','tit','cis','cunt','sjw','cum','sex','dildo','penis','nigg','bugger']
+    Bad = ['fuck','porn','yiff','pee','defecate','autis','bitch','anal','douche','shit','gay','daddy','dick','tit','cis','cunt','sjw','cum','sex','dildo','penis','nigg','bugger']
     for x in Bad:
         if x in words.lower():
             didpass = False
